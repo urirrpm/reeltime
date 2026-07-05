@@ -26,8 +26,10 @@ export function ProfileStats({ userId }: { userId: string }) {
     })),
   });
 
+  // Si TMDB no da duración de una serie, estimamos ~42 min/episodio.
+  const FALLBACK_RUNTIME = 42;
   const totalMinutes = perShow.reduce((sum, s, i) => {
-    const rt = briefs[i]?.data?.runtime ?? 0;
+    const rt = briefs[i]?.data?.runtime ?? FALLBACK_RUNTIME;
     return sum + s.episodes * rt;
   }, 0);
   const { months, days, hours } = watchTime(totalMinutes);

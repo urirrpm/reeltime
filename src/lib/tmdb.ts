@@ -146,9 +146,14 @@ export async function getMediaBrief(
   region: RegionOption = DEFAULT_REGION,
 ): Promise<MediaBrief> {
   const raw = await request<any>(`/${type}/${id}`, { language: region.language });
+  // TMDB devuelve episode_run_time vacío para muchas series modernas; caemos a
+  // la duración del último/próximo episodio emitido, que sí suele venir.
   const runtime =
     type === 'tv'
-      ? (raw.episode_run_time?.[0] ?? null)
+      ? (raw.episode_run_time?.[0] ??
+        raw.last_episode_to_air?.runtime ??
+        raw.next_episode_to_air?.runtime ??
+        null)
       : (raw.runtime ?? null);
   return {
     id: raw.id,
