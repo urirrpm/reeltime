@@ -11,6 +11,7 @@ import {
 
 import { FeedItem } from '@/components/FeedItem';
 import { FollowButton } from '@/components/FollowButton';
+import { ProfileStats } from '@/components/ProfileStats';
 import { Screen } from '@/components/Screen';
 import {
   groupFeed,
@@ -18,7 +19,6 @@ import {
   type FeedItem as FeedItemType,
 } from '@/hooks/useActivityFeed';
 import { useFollowCounts, useProfile } from '@/hooks/useSocial';
-import { imageUrl } from '@/lib/tmdb';
 import { colors, radius, spacing, type } from '@/theme';
 
 export default function UserScreen() {
@@ -40,7 +40,9 @@ export default function UserScreen() {
   );
 
   const username = profile?.username ?? 'usuario';
-  const avatarUri = imageUrl(profile?.avatar_url, 'w185');
+  // Los avatares/portadas se guardan como URL pública completa (Supabase Storage).
+  const avatarUri = profile?.avatar_url ?? null;
+  const coverUri = profile?.cover_url ?? null;
   const initial = username.charAt(0).toUpperCase();
 
   return (
@@ -51,23 +53,37 @@ export default function UserScreen() {
         keyExtractor={(it) => it.id}
         renderItem={({ item }) => <FeedItem item={item} />}
         ListHeaderComponent={
-          <View style={styles.header}>
-            <View style={styles.avatar}>
-              {avatarUri ? (
+          <View>
+            <View style={styles.cover}>
+              {coverUri ? (
                 <Image
-                  source={{ uri: avatarUri }}
+                  source={{ uri: coverUri }}
                   style={StyleSheet.absoluteFill}
                 />
-              ) : (
-                <Text style={styles.avatarText}>{initial}</Text>
-              )}
+              ) : null}
             </View>
-            <Text style={styles.username}>@{username}</Text>
-            <Text style={styles.counts}>
-              {counts?.followers ?? 0} seguidores · {counts?.following ?? 0}{' '}
-              siguiendo
-            </Text>
-            {id && <FollowButton userId={id} />}
+            <View style={styles.header}>
+              <View style={styles.avatar}>
+                {avatarUri ? (
+                  <Image
+                    source={{ uri: avatarUri }}
+                    style={StyleSheet.absoluteFill}
+                  />
+                ) : (
+                  <Text style={styles.avatarText}>{initial}</Text>
+                )}
+              </View>
+              <Text style={styles.username}>@{username}</Text>
+              {!!profile?.bio && <Text style={styles.bio}>{profile.bio}</Text>}
+              <Text style={styles.counts}>
+                {counts?.followers ?? 0} seguidores · {counts?.following ?? 0}{' '}
+                siguiendo
+              </Text>
+              {id && <FollowButton userId={id} />}
+            </View>
+            <View style={styles.statsWrap}>
+              {id && <ProfileStats userId={id} />}
+            </View>
             <Text style={styles.sectionLabel}>Actividad</Text>
           </View>
         }
@@ -100,21 +116,31 @@ export default function UserScreen() {
 }
 
 const styles = StyleSheet.create({
+  cover: { height: 130, backgroundColor: colors.surfaceHigh },
   header: {
     alignItems: 'center',
-    paddingTop: spacing.lg,
     paddingBottom: spacing.md,
     gap: spacing.sm,
   },
   avatar: {
-    width: 76,
-    height: 76,
+    width: 84,
+    height: 84,
     borderRadius: radius.pill,
     backgroundColor: colors.primarySoft,
     alignItems: 'center',
     justifyContent: 'center',
     overflow: 'hidden',
+    marginTop: -42,
+    borderWidth: 4,
+    borderColor: colors.bg,
   },
+  bio: {
+    color: colors.textMuted,
+    ...type.body,
+    textAlign: 'center',
+    paddingHorizontal: spacing.xl,
+  },
+  statsWrap: { paddingHorizontal: spacing.lg, paddingBottom: spacing.md },
   avatarText: { color: colors.primary, fontWeight: '800', fontSize: 30 },
   username: { color: colors.text, ...type.title },
   counts: { color: colors.textMuted, ...type.body },

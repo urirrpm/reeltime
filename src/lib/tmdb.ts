@@ -136,6 +136,8 @@ export interface MediaBrief {
   media_type: MediaType;
   title: string;
   poster_path: string | null;
+  /** Duración en minutos: de la película, o media por episodio en series. */
+  runtime: number | null;
 }
 
 export async function getMediaBrief(
@@ -144,11 +146,16 @@ export async function getMediaBrief(
   region: RegionOption = DEFAULT_REGION,
 ): Promise<MediaBrief> {
   const raw = await request<any>(`/${type}/${id}`, { language: region.language });
+  const runtime =
+    type === 'tv'
+      ? (raw.episode_run_time?.[0] ?? null)
+      : (raw.runtime ?? null);
   return {
     id: raw.id,
     media_type: type,
     title: raw.title ?? raw.name ?? 'Sin título',
     poster_path: raw.poster_path ?? null,
+    runtime,
   };
 }
 

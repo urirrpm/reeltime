@@ -45,6 +45,20 @@ export function timeAgo(iso: string): string {
   return formatDate(iso.slice(0, 10));
 }
 
+/** Descompone minutos totales en meses/días/horas (estilo estadísticas TV Time). */
+export function watchTime(minutes: number): {
+  months: number;
+  days: number;
+  hours: number;
+} {
+  const totalHours = Math.floor(minutes / 60);
+  const totalDays = Math.floor(totalHours / 24);
+  const months = Math.floor(totalDays / 30);
+  const days = totalDays - months * 30;
+  const hours = totalHours - totalDays * 24;
+  return { months, days, hours };
+}
+
 /** Días hasta una fecha (negativo = pasada). null si no hay fecha. */
 export function daysUntil(date: string | null | undefined, today: Date): number | null {
   if (!date) return null;

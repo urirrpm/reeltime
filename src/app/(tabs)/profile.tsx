@@ -1,3 +1,5 @@
+import { Ionicons } from '@expo/vector-icons';
+import { Image } from 'expo-image';
 import { Link } from 'expo-router';
 import {
   Pressable,
@@ -8,8 +10,10 @@ import {
   View,
 } from 'react-native';
 
+import { ProfileStats } from '@/components/ProfileStats';
 import { Screen } from '@/components/Screen';
 import { REGIONS } from '@/config/region';
+import { useProfile } from '@/hooks/useSocial';
 import { useAuth } from '@/providers/AuthProvider';
 import { usePush } from '@/providers/PushProvider';
 import { useRegion } from '@/providers/RegionProvider';
@@ -19,11 +23,54 @@ export default function ProfileScreen() {
   const { session, configured, signOut } = useAuth();
   const { region, setRegion } = useRegion();
   const { enabled: pushEnabled, busy: pushBusy, toggle: togglePush } = usePush();
+  const { data: profile } = useProfile(session?.user.id);
 
   return (
     <Screen>
       <ScrollView contentContainerStyle={styles.content}>
         <Text style={styles.title}>Perfil</Text>
+
+        {session && (
+          <>
+            <View style={styles.hero}>
+              <View style={styles.cover}>
+                {profile?.cover_url ? (
+                  <Image
+                    source={{ uri: profile.cover_url }}
+                    style={StyleSheet.absoluteFill}
+                  />
+                ) : null}
+              </View>
+              <View style={styles.heroBody}>
+                <View style={styles.avatar}>
+                  {profile?.avatar_url ? (
+                    <Image
+                      source={{ uri: profile.avatar_url }}
+                      style={StyleSheet.absoluteFill}
+                    />
+                  ) : (
+                    <Ionicons name="person" size={30} color={colors.primary} />
+                  )}
+                </View>
+                <View style={styles.heroText}>
+                  <Text style={styles.username}>
+                    @{profile?.username ?? 'usuario'}
+                  </Text>
+                  {!!profile?.bio && (
+                    <Text style={styles.bio}>{profile.bio}</Text>
+                  )}
+                </View>
+                <Link href="/edit-profile" asChild>
+                  <Pressable style={styles.editBtn}>
+                    <Text style={styles.editText}>Editar</Text>
+                  </Pressable>
+                </Link>
+              </View>
+            </View>
+
+            <ProfileStats userId={session.user.id} />
+          </>
+        )}
 
         <View style={styles.card}>
           <Text style={styles.cardLabel}>Cuenta</Text>
@@ -109,6 +156,41 @@ export default function ProfileScreen() {
 const styles = StyleSheet.create({
   content: { padding: spacing.lg, gap: spacing.lg },
   title: { color: colors.text, ...type.hero },
+  hero: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    overflow: 'hidden',
+  },
+  cover: { height: 110, backgroundColor: colors.surfaceHigh },
+  heroBody: {
+    flexDirection: 'row',
+    alignItems: 'flex-end',
+    gap: spacing.md,
+    paddingHorizontal: spacing.lg,
+    paddingBottom: spacing.lg,
+  },
+  avatar: {
+    width: 72,
+    height: 72,
+    borderRadius: radius.pill,
+    backgroundColor: colors.primarySoft,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginTop: -36,
+    borderWidth: 3,
+    borderColor: colors.surface,
+    overflow: 'hidden',
+  },
+  heroText: { flex: 1, gap: 2, paddingBottom: 2 },
+  username: { color: colors.text, ...type.heading },
+  bio: { color: colors.textMuted, ...type.caption },
+  editBtn: {
+    paddingHorizontal: spacing.lg,
+    paddingVertical: spacing.sm,
+    borderRadius: radius.pill,
+    backgroundColor: colors.surfaceHigh,
+  },
+  editText: { color: colors.text, ...type.caption, fontWeight: '700' },
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,

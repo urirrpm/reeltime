@@ -11,9 +11,11 @@ export interface PublicProfile {
   id: string;
   username: string | null;
   avatar_url: string | null;
+  cover_url: string | null;
+  bio: string | null;
 }
 
-/** Perfil público (username/avatar) de un usuario cualquiera. */
+/** Perfil público (username/avatar/portada/bio) de un usuario cualquiera. */
 export function useProfile(userId?: string) {
   return useQuery({
     queryKey: ['profile', userId],
@@ -21,12 +23,34 @@ export function useProfile(userId?: string) {
     queryFn: async (): Promise<PublicProfile> => {
       const { data, error } = await supabase
         .from('profiles')
-        .select('id, username, avatar_url')
+        .select('id, username, avatar_url, cover_url, bio')
         .eq('id', userId!)
         .single();
       if (error) throw error;
       return data as PublicProfile;
     },
+  });
+}
+
+/** Actualiza campos del perfil del usuario actual. */
+export function useUpdateProfile() {
+  const qc = useQueryClient();
+  const { session } = useAuth();
+  return useMutation({
+    mutationFn: async (patch: {
+      username?: string;
+      bio?: string | null;
+      avatar_url?: string | null;
+      cover_url?: string | null;
+    }) => {
+      if (!session) throw new Error('Debes iniciar sesión');
+      const { error } = await supabase
+        .from('profiles')
+        .update(patch)
+        .eq('id', session.user.id);
+      if (error) throw error;
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['profile'] }),
   });
 }
 

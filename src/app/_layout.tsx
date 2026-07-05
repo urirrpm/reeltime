@@ -34,6 +34,10 @@ export default function RootLayout() {
                     options={{ presentation: 'modal', title: 'Cuenta' }}
                   />
                   <Stack.Screen name="user/[id]" options={{ title: '' }} />
+                  <Stack.Screen
+                    name="edit-profile"
+                    options={{ presentation: 'modal', title: 'Editar perfil' }}
+                  />
                 </Stack>
               </PushProvider>
             </AuthProvider>

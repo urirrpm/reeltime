@@ -8,7 +8,6 @@ import { Poster } from '@/components/Poster';
 import { useMediaBrief } from '@/hooks/useTmdb';
 import type { FeedItem as FeedItemType } from '@/hooks/useActivityFeed';
 import { timeAgo } from '@/lib/format';
-import { imageUrl } from '@/lib/tmdb';
 import { colors, radius, spacing, type as typo } from '@/theme';
 
 /** Etiqueta "T2E5" a partir de temporada/episodio (o '' si falta). */
@@ -49,7 +48,8 @@ function actionText(item: FeedItemType): string {
 function FeedItemBase({ item }: { item: FeedItemType }) {
   const { data: brief } = useMediaBrief(item.media_type, item.tmdb_id);
   const title = brief?.title ?? '';
-  const avatarUri = imageUrl(item.avatar_url, 'w185');
+  // El avatar es una URL pública completa (Supabase Storage), no un path de TMDB.
+  const avatarUri = item.avatar_url;
   const initial = (item.username ?? '?').charAt(0).toUpperCase();
 
   return (
