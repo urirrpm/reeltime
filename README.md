@@ -1,56 +1,58 @@
-# Welcome to your Expo app 👋
+# Reeltime 🎬
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Rastreador social de series y películas — un sustituto de **TV Time** (que cierra).
+Sigue lo que ves, descubre **dónde está disponible** cada título en tu país, y
+recibe el calendario de nuevos episodios. Construido para iPhone (y Android en el
+futuro) con un único código.
 
-## Get started
+## Stack
 
-1. Install dependencies
+| Capa | Tecnología |
+|------|-----------|
+| App móvil | **Expo (React Native) + TypeScript + Expo Router** |
+| Datos de caché | **TanStack Query** |
+| Catálogo + "¿dónde verlo?" | **TMDB API** (disponibilidad vía JustWatch) |
+| Backend (auth, DB, realtime) | **Supabase** |
 
-   ```bash
-   npm install
-   ```
+Un solo código → **iOS y Android**. El catálogo y la disponibilidad se
+actualizan **solos** desde TMDB: no hace falta gente manteniendo datos.
 
-2. Start the app
+## Arranque rápido
 
-   ```bash
-   npx expo start
-   ```
-
-In the output, you'll find options to open the app in a
-
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
-
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
-
-## Get a fresh project
-
-When you're ready, run:
+Ver la guía completa en **[`docs/SETUP.md`](docs/SETUP.md)**. Resumen:
 
 ```bash
-npm run reset-project
+cp .env.example .env      # y rellena tokens de TMDB + Supabase
+npm start                 # escanea el QR con Expo Go
 ```
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+## Estructura
 
-### Other setup steps
+```
+src/
+  app/                 # rutas (Expo Router)
+    (tabs)/            # Descubrir · Buscar · Mi lista · Calendario · Perfil
+    title/[type]/[id]  # ficha de detalle (peli o serie)
+    sign-in.tsx        # login / registro
+  components/          # Poster, PosterCard, MediaRow, WatchProviders…
+  hooks/               # useTmdb (catálogo), useTracking (Supabase)
+  lib/                 # tmdb.ts (cliente API), supabase.ts, format.ts
+  providers/           # Query, Auth, Region
+  config/              # env, regiones
+  types/               # tipos de TMDB
+supabase/schema.sql    # tablas + RLS (aplícalo en el SQL Editor de Supabase)
+```
 
-- To set up ESLint for linting, run `npx expo lint`, or follow our guide on ["Using ESLint and Prettier"](https://docs.expo.dev/guides/using-eslint/)
-- If you'd like to set up unit testing, follow our guide on ["Unit Testing with Jest"](https://docs.expo.dev/develop/unit-testing/)
-- Learn more about the TypeScript setup in this template in our guide on ["Using TypeScript"](https://docs.expo.dev/guides/typescript/)
+## Hoja de ruta
 
-## Learn more
+- **Fase 1 (este MVP)** ✅ tracking, descubrir, buscar, detalle con "dónde verlo",
+  calendario de estrenos, cuentas.
+- **Fase 2** — notificaciones push de nuevos episodios; capa social: valoraciones,
+  comentarios públicos por título/episodio, encuestas ("mejor personaje del
+  capítulo"). *Las tablas de Supabase ya están preparadas en `schema.sql`.*
+- **Fase 3** — feed de actividad, seguir usuarios, pulido y publicación en Android.
 
-To learn more about developing your project with Expo, look at the following resources:
+## Créditos de datos
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
-
-## Join the community
-
-Join our community of developers creating universal apps.
-
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+Este producto usa la API de TMDB pero no está avalado ni certificado por TMDB.
+Datos de disponibilidad de streaming por JustWatch.

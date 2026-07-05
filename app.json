@@ -1,11 +1,11 @@
 {
   "expo": {
-    "name": "_scaffold",
-    "slug": "_scaffold",
-    "version": "1.0.0",
+    "name": "Reeltime",
+    "slug": "reeltime",
+    "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
-    "scheme": "scaffold",
+    "scheme": "reeltime",
     "userInterfaceStyle": "automatic",
     "ios": {
       "icon": "./assets/expo.icon"

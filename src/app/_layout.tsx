@@ -1,18 +1,41 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { useColorScheme } from 'react-native';
+import { Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-import { AnimatedSplashOverlay } from '@/components/animated-icon';
-import AppTabs from '@/components/app-tabs';
+import { AuthProvider } from '@/providers/AuthProvider';
+import { QueryProvider } from '@/providers/QueryProvider';
+import { RegionProvider } from '@/providers/RegionProvider';
+import { colors } from '@/theme';
 
-SplashScreen.preventAutoHideAsync();
-
-export default function TabLayout() {
-  const colorScheme = useColorScheme();
+export default function RootLayout() {
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <AnimatedSplashOverlay />
-      <AppTabs />
-    </ThemeProvider>
+    <GestureHandlerRootView style={{ flex: 1 }}>
+      <SafeAreaProvider>
+        <QueryProvider>
+          <RegionProvider>
+            <AuthProvider>
+              <StatusBar style="light" />
+              <Stack
+                screenOptions={{
+                  headerStyle: { backgroundColor: colors.bg },
+                  headerTintColor: colors.text,
+                  contentStyle: { backgroundColor: colors.bg },
+                }}>
+                <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
+                <Stack.Screen
+                  name="title/[type]/[id]"
+                  options={{ title: '', headerTransparent: true }}
+                />
+                <Stack.Screen
+                  name="sign-in"
+                  options={{ presentation: 'modal', title: 'Cuenta' }}
+                />
+              </Stack>
+            </AuthProvider>
+          </RegionProvider>
+        </QueryProvider>
+      </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
 }
