@@ -2,6 +2,7 @@
   "expo": {
     "name": "Reeltime",
     "slug": "reeltime",
+    "owner": "urirrpm",
     "version": "0.1.0",
     "orientation": "portrait",
     "icon": "./assets/images/icon.png",
@@ -38,6 +39,12 @@
     "experiments": {
       "typedRoutes": true,
       "reactCompiler": true
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "a8124754-a3e3-44b6-81f4-07501c72cb7e"
+      }
     }
   }
 }
