@@ -16,7 +16,7 @@ import {
   type TrackedItem,
 } from '@/hooks/useTracking';
 import { useAuth } from '@/providers/AuthProvider';
-import { colors, radius, spacing } from '@/theme';
+import { colors, radius, spacing, type } from '@/theme';
 import type { MediaListItem } from '@/types/tmdb';
 
 const SECTIONS: { status: TrackStatus; label: string }[] = [
@@ -106,9 +106,9 @@ export default function LibraryScreen() {
 
 const styles = StyleSheet.create({
   content: { padding: spacing.lg, gap: spacing.xl },
-  title: { color: colors.text, fontSize: 28, fontWeight: '800' },
+  title: { color: colors.text, ...type.hero },
   section: { gap: spacing.md },
-  heading: { color: colors.text, fontSize: 18, fontWeight: '700' },
+  heading: { color: colors.text, ...type.heading },
   grid: { flexDirection: 'row', flexWrap: 'wrap', gap: spacing.md },
   loader: { marginTop: spacing.xxl },
   centered: {
@@ -132,5 +132,5 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderRadius: radius.pill,
   },
-  ctaText: { color: colors.text, fontWeight: '700', fontSize: 16 },
+  ctaText: { color: colors.onAccent, fontWeight: '700', fontSize: 16 },
 });

@@ -16,7 +16,7 @@ import { getNextEpisode, type NextEpisodeInfo } from '@/lib/tmdb';
 import { formatDate } from '@/lib/format';
 import { useAuth } from '@/providers/AuthProvider';
 import { useRegion } from '@/providers/RegionProvider';
-import { colors, radius, spacing } from '@/theme';
+import { colors, radius, spacing, type } from '@/theme';
 
 export default function CalendarScreen() {
   const { session, configured } = useAuth();
@@ -99,7 +99,7 @@ export default function CalendarScreen() {
 
 const styles = StyleSheet.create({
   content: { padding: spacing.lg, gap: spacing.lg },
-  title: { color: colors.text, fontSize: 28, fontWeight: '800' },
+  title: { color: colors.text, ...type.hero },
   row: {
     flexDirection: 'row',
     gap: spacing.md,
@@ -133,5 +133,5 @@ const styles = StyleSheet.create({
     paddingVertical: spacing.md,
     borderRadius: radius.pill,
   },
-  ctaText: { color: colors.text, fontWeight: '700', fontSize: 16 },
+  ctaText: { color: colors.onAccent, fontWeight: '700', fontSize: 16 },
 });

@@ -1,7 +1,7 @@
 import { FlatList, Text, View, StyleSheet, ActivityIndicator } from 'react-native';
 
 import { PosterCard } from '@/components/PosterCard';
-import { colors, spacing } from '@/theme';
+import { colors, spacing, type } from '@/theme';
 import type { MediaListItem } from '@/types/tmdb';
 
 interface Props {
@@ -10,7 +10,7 @@ interface Props {
   loading?: boolean;
 }
 
-/** Carrusel horizontal de pósters con título de sección. */
+/** Carrusel horizontal de pósters (sin títulos, más limpio). */
 export function MediaRow({ title, items, loading }: Props) {
   return (
     <View style={styles.section}>
@@ -24,7 +24,9 @@ export function MediaRow({ title, items, loading }: Props) {
           keyExtractor={(item) => `${item.media_type}-${item.id}`}
           showsHorizontalScrollIndicator={false}
           contentContainerStyle={styles.list}
-          renderItem={({ item }) => <PosterCard item={item} />}
+          renderItem={({ item }) => (
+            <PosterCard item={item} width={128} showTitle={false} />
+          )}
         />
       )}
     </View>
@@ -33,12 +35,11 @@ export function MediaRow({ title, items, loading }: Props) {
 
 const styles = StyleSheet.create({
   section: {
-    gap: spacing.sm,
+    gap: spacing.md,
   },
   heading: {
     color: colors.text,
-    fontSize: 18,
-    fontWeight: '700',
+    ...type.heading,
     paddingHorizontal: spacing.lg,
   },
   list: {
@@ -46,6 +47,6 @@ const styles = StyleSheet.create({
     gap: spacing.md,
   },
   loader: {
-    height: 180,
+    height: 192,
   },
 });

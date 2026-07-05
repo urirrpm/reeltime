@@ -11,7 +11,7 @@ import {
 import { PosterCard } from '@/components/PosterCard';
 import { Screen } from '@/components/Screen';
 import { useSearch } from '@/hooks/useTmdb';
-import { colors, radius, spacing } from '@/theme';
+import { colors, radius, spacing, type } from '@/theme';
 
 export default function SearchScreen() {
   const [query, setQuery] = useState('');
@@ -20,10 +20,11 @@ export default function SearchScreen() {
   return (
     <Screen>
       <View style={styles.header}>
+        <Text style={styles.screenTitle}>Buscar</Text>
         <TextInput
           value={query}
           onChangeText={setQuery}
-          placeholder="Buscar series y películas…"
+          placeholder="Series y películas…"
           placeholderTextColor={colors.textMuted}
           style={styles.input}
           autoCorrect={false}
@@ -52,13 +53,15 @@ export default function SearchScreen() {
 
 const styles = StyleSheet.create({
   header: {
-    padding: spacing.lg,
+    paddingHorizontal: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.md,
+    gap: spacing.md,
   },
+  screenTitle: { color: colors.text, ...type.hero },
   input: {
     backgroundColor: colors.surface,
     borderRadius: radius.md,
-    borderWidth: 1,
-    borderColor: colors.border,
     color: colors.text,
     paddingHorizontal: spacing.md,
     paddingVertical: spacing.md,

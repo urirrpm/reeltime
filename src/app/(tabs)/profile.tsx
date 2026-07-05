@@ -11,7 +11,7 @@ import { Screen } from '@/components/Screen';
 import { REGIONS } from '@/config/region';
 import { useAuth } from '@/providers/AuthProvider';
 import { useRegion } from '@/providers/RegionProvider';
-import { colors, radius, spacing } from '@/theme';
+import { colors, radius, spacing, type } from '@/theme';
 
 export default function ProfileScreen() {
   const { session, configured, signOut } = useAuth();
@@ -82,7 +82,7 @@ export default function ProfileScreen() {
 
 const styles = StyleSheet.create({
   content: { padding: spacing.lg, gap: spacing.lg },
-  title: { color: colors.text, fontSize: 28, fontWeight: '800' },
+  title: { color: colors.text, ...type.hero },
   card: {
     backgroundColor: colors.surface,
     borderRadius: radius.lg,
@@ -108,7 +108,7 @@ const styles = StyleSheet.create({
   },
   chipActive: { backgroundColor: colors.primary, borderColor: colors.primary },
   chipText: { color: colors.textMuted, fontWeight: '600' },
-  chipTextActive: { color: colors.text },
+  chipTextActive: { color: colors.onAccent },
   primaryBtn: {
     marginTop: spacing.sm,
     backgroundColor: colors.primary,
@@ -116,7 +116,7 @@ const styles = StyleSheet.create({
     borderRadius: radius.pill,
     alignItems: 'center',
   },
-  primaryBtnText: { color: colors.text, fontWeight: '700', fontSize: 16 },
+  primaryBtnText: { color: colors.onAccent, fontWeight: '700', fontSize: 16 },
   outlineBtn: {
     marginTop: spacing.sm,
     borderWidth: 1,

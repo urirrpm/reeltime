@@ -9,7 +9,7 @@ import {
   useTrending,
   useUpcomingMovies,
 } from '@/hooks/useTmdb';
-import { colors, spacing } from '@/theme';
+import { colors, spacing, type } from '@/theme';
 
 export default function DiscoverScreen() {
   const trending = useTrending();
@@ -23,14 +23,15 @@ export default function DiscoverScreen() {
       <ScrollView
         contentContainerStyle={styles.content}
         showsVerticalScrollIndicator={false}>
-        <Text style={styles.appName}>Reeltime</Text>
+        <View style={styles.header}>
+          <Text style={styles.appName}>Reeltime</Text>
+        </View>
 
         {!hasTmdb() && (
           <View style={styles.banner}>
             <Text style={styles.bannerTitle}>Falta configurar TMDB</Text>
             <Text style={styles.bannerText}>
-              Añade tu token en el fichero .env para ver el catálogo. Consulta
-              docs/SETUP.md.
+              Añade tu token en el fichero .env para ver el catálogo.
             </Text>
           </View>
         )}
@@ -68,21 +69,19 @@ export default function DiscoverScreen() {
 const styles = StyleSheet.create({
   content: {
     gap: spacing.xl,
-    paddingVertical: spacing.lg,
+    paddingTop: spacing.sm,
+    paddingBottom: spacing.xxl,
   },
-  appName: {
-    color: colors.text,
-    fontSize: 28,
-    fontWeight: '800',
+  header: {
     paddingHorizontal: spacing.lg,
+    paddingTop: spacing.xs,
   },
+  appName: { color: colors.text, ...type.hero },
   banner: {
     marginHorizontal: spacing.lg,
     padding: spacing.md,
-    borderRadius: 12,
-    backgroundColor: colors.surfaceAlt,
-    borderWidth: 1,
-    borderColor: colors.primary,
+    borderRadius: 14,
+    backgroundColor: colors.primarySoft,
     gap: spacing.xs,
   },
   bannerTitle: { color: colors.text, fontWeight: '700' },

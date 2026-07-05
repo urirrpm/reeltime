@@ -75,9 +75,9 @@ export function CommentsSection({
               (!text.trim() || add.isPending) && styles.sendBtnDisabled,
             ]}>
             {add.isPending ? (
-              <ActivityIndicator color={colors.text} size="small" />
+              <ActivityIndicator color={colors.onAccent} size="small" />
             ) : (
-              <Ionicons name="send" size={18} color={colors.text} />
+              <Ionicons name="send" size={18} color={colors.onAccent} />
             )}
           </Pressable>
         </View>
@@ -209,7 +209,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  avatarText: { color: colors.text, fontWeight: '800', fontSize: 15 },
+  avatarText: { color: colors.onAccent, fontWeight: '800', fontSize: 15 },
   commentBody: { flex: 1, gap: 2 },
   commentHeader: { flexDirection: 'row', alignItems: 'center', gap: spacing.xs },
   username: { color: colors.text, fontWeight: '700', fontSize: 14 },

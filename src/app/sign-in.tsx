@@ -79,7 +79,7 @@ export default function SignInScreen() {
 
         <Pressable style={styles.primaryBtn} onPress={submit} disabled={loading}>
           {loading ? (
-            <ActivityIndicator color={colors.text} />
+            <ActivityIndicator color={colors.onAccent} />
           ) : (
             <Text style={styles.primaryBtnText}>
               {mode === 'signin' ? 'Entrar' : 'Registrarme'}
@@ -121,7 +121,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     marginTop: spacing.sm,
   },
-  primaryBtnText: { color: colors.text, fontWeight: '700', fontSize: 16 },
+  primaryBtnText: { color: colors.onAccent, fontWeight: '700', fontSize: 16 },
   switch: { color: colors.primary, textAlign: 'center', marginTop: spacing.md },
   error: { color: colors.danger, fontSize: 13 },
   notice: { color: colors.green, fontSize: 13 },

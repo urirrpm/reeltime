@@ -15,7 +15,7 @@ export default function RootLayout() {
         <QueryProvider>
           <RegionProvider>
             <AuthProvider>
-              <StatusBar style="light" />
+              <StatusBar style="dark" />
               <Stack
                 screenOptions={{
                   headerStyle: { backgroundColor: colors.bg },

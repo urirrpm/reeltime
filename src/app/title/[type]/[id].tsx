@@ -74,7 +74,7 @@ export default function TitleDetailScreen() {
           />
         )}
         <LinearGradient
-          colors={['transparent', 'rgba(10,10,12,0.6)', colors.bg]}
+          colors={['transparent', 'rgba(255,255,255,0.55)', colors.bg]}
           locations={[0, 0.6, 1]}
           style={styles.backdropFade}
         />
@@ -293,7 +293,7 @@ function TrackControls({ detail }: { detail: MediaDetail }) {
             <Ionicons
               name={opt.icon}
               size={18}
-              color={active ? colors.text : colors.textMuted}
+              color={active ? colors.onAccent : colors.textMuted}
             />
             <Text
               style={[styles.trackBtnText, active && styles.trackBtnTextActive]}>
@@ -369,7 +369,7 @@ const styles = StyleSheet.create({
   },
   trackBtnActive: { backgroundColor: colors.primary, borderColor: colors.primary },
   trackBtnText: { color: colors.textMuted, fontSize: 13, fontWeight: '600' },
-  trackBtnTextActive: { color: colors.text },
+  trackBtnTextActive: { color: colors.onAccent },
   signInPrompt: {
     flexDirection: 'row',
     gap: spacing.sm,
