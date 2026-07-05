@@ -3,6 +3,7 @@ import { Link } from 'expo-router';
 import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { useMyRating, useRatingSummary, useSetRating } from '@/hooks/useRatings';
+import { haptics } from '@/lib/haptics';
 import { useAuth } from '@/providers/AuthProvider';
 import { colors, radius, spacing } from '@/theme';
 import type { MediaType } from '@/types/tmdb';
@@ -45,7 +46,10 @@ export function RatingBox({ tmdbId, mediaType }: Props) {
             {STARS.map((n) => (
               <Pressable
                 key={n}
-                onPress={() => setRating.mutate(n)}
+                onPress={() => {
+                  haptics.selection();
+                  setRating.mutate(n);
+                }}
                 hitSlop={4}
                 style={styles.starHit}>
                 <Ionicons

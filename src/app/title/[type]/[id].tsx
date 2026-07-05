@@ -1,5 +1,6 @@
 import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
+import { LinearGradient } from 'expo-linear-gradient';
 import { Link, useLocalSearchParams, useRouter, Stack } from 'expo-router';
 import {
   ActivityIndicator,
@@ -13,6 +14,7 @@ import {
 
 import { CommentsSection } from '@/components/CommentsSection';
 import { Poster } from '@/components/Poster';
+import { ProgressBar } from '@/components/ProgressBar';
 import { RatingBox } from '@/components/RatingBox';
 import { WatchProviders } from '@/components/WatchProviders';
 import { useDetail } from '@/hooks/useTmdb';
@@ -22,10 +24,12 @@ import {
   useTrackStatus,
   type TrackStatus,
 } from '@/hooks/useTracking';
+import { useWatchedEpisodes } from '@/hooks/useWatched';
+import { haptics } from '@/lib/haptics';
 import { imageUrl } from '@/lib/tmdb';
-import { formatDate, formatRuntime, year } from '@/lib/format';
+import { formatRuntime, year } from '@/lib/format';
 import { useAuth } from '@/providers/AuthProvider';
-import { colors, radius, spacing } from '@/theme';
+import { colors, radius, spacing, type as typo } from '@/theme';
 import type { MediaDetail, MediaType } from '@/types/tmdb';
 
 const STATUS_OPTIONS: { status: TrackStatus; label: string; icon: keyof typeof Ionicons.glyphMap }[] = [
@@ -60,7 +64,7 @@ export default function TitleDetailScreen() {
     <ScrollView style={styles.bg} contentContainerStyle={styles.content}>
       <Stack.Screen options={{ title: data.title }} />
 
-      {/* Backdrop */}
+      {/* Backdrop con degradado hacia el fondo */}
       <View style={styles.backdropWrap}>
         {data.backdrop_path && (
           <Image
@@ -69,6 +73,11 @@ export default function TitleDetailScreen() {
             contentFit="cover"
           />
         )}
+        <LinearGradient
+          colors={['transparent', 'rgba(10,10,12,0.6)', colors.bg]}
+          locations={[0, 0.6, 1]}
+          style={styles.backdropFade}
+        />
       </View>
 
       <View style={styles.body}>
@@ -106,6 +115,8 @@ export default function TitleDetailScreen() {
         </View>
 
         <TrackControls detail={data} />
+
+        {type === 'tv' && <SeriesProgress detail={data} />}
 
         <RatingBox tmdbId={data.id} mediaType={data.media_type} />
 
@@ -207,6 +218,33 @@ function Section({
   );
 }
 
+/** Progreso de la serie: episodios vistos / total. Solo si hay sesión. */
+function SeriesProgress({ detail }: { detail: MediaDetail }) {
+  const { session } = useAuth();
+  const { data: watched } = useWatchedEpisodes(detail.id);
+  const total = detail.numberOfEpisodes ?? 0;
+
+  if (!session || total === 0) return null;
+
+  const seen = Math.min(watched?.length ?? 0, total);
+  const pct = total ? seen / total : 0;
+
+  return (
+    <View style={styles.progressCard}>
+      <View style={styles.progressTop}>
+        <Text style={styles.progressLabel}>Tu progreso</Text>
+        <Text style={styles.progressValue}>
+          {seen}/{total} · {Math.round(pct * 100)}%
+        </Text>
+      </View>
+      <ProgressBar value={pct} />
+      {seen === total && (
+        <Text style={styles.progressDone}>¡Serie completada!</Text>
+      )}
+    </View>
+  );
+}
+
 /** Botones de estado de seguimiento (requieren sesión). */
 function TrackControls({ detail }: { detail: MediaDetail }) {
   const router = useRouter();
@@ -229,6 +267,7 @@ function TrackControls({ detail }: { detail: MediaDetail }) {
   }
 
   const choose = (status: TrackStatus) => {
+    haptics.light();
     if (current?.status === status) {
       remove.mutate({ tmdb_id: detail.id, media_type: detail.media_type });
     } else {
@@ -276,13 +315,34 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   content: { paddingBottom: spacing.xxl },
-  backdropWrap: { height: 240, backgroundColor: colors.surfaceAlt },
-  backdrop: { width: '100%', height: 240, opacity: 0.6 },
-  body: { padding: spacing.lg, gap: spacing.xl, marginTop: -60 },
+  backdropWrap: { height: 260, backgroundColor: colors.surfaceAlt },
+  backdrop: { width: '100%', height: 260, opacity: 0.9 },
+  backdropFade: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    bottom: 0,
+    height: 200,
+  },
+  body: { padding: spacing.lg, gap: spacing.xl, marginTop: -72 },
   headerRow: { flexDirection: 'row', gap: spacing.md },
   headerInfo: { flex: 1, gap: spacing.xs, justifyContent: 'flex-end' },
-  title: { color: colors.text, fontSize: 22, fontWeight: '800' },
+  title: { color: colors.text, ...typo.title },
   meta: { color: colors.textMuted, fontSize: 14 },
+  progressCard: {
+    backgroundColor: colors.surface,
+    borderRadius: radius.lg,
+    padding: spacing.lg,
+    gap: spacing.md,
+  },
+  progressTop: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  progressLabel: { color: colors.text, ...typo.bodyStrong },
+  progressValue: { color: colors.textMuted, ...typo.bodyStrong },
+  progressDone: { color: colors.green, ...typo.caption, fontWeight: '600' },
   ratingRow: { flexDirection: 'row', alignItems: 'center', gap: 4 },
   rating: { color: colors.text, fontWeight: '700' },
   muted: { color: colors.textMuted, fontSize: 13 },

@@ -1,5 +1,6 @@
+import { Ionicons } from '@expo/vector-icons';
 import { Image } from 'expo-image';
-import { View, Text, StyleSheet, type ViewStyle } from 'react-native';
+import { View, StyleSheet, type ViewStyle } from 'react-native';
 
 import { imageUrl } from '@/lib/tmdb';
 import { colors, radius } from '@/theme';
@@ -27,7 +28,11 @@ export function Poster({ path, width, size = 'w342', style }: Props) {
         />
       ) : (
         <View style={styles.placeholder}>
-          <Text style={styles.placeholderText}>🎬</Text>
+          <Ionicons
+            name="film-outline"
+            size={Math.max(20, width * 0.28)}
+            color={colors.textFaint}
+          />
         </View>
       )}
     </View>
@@ -44,9 +49,5 @@ const styles = StyleSheet.create({
     flex: 1,
     alignItems: 'center',
     justifyContent: 'center',
-  },
-  placeholderText: {
-    fontSize: 28,
-    opacity: 0.5,
   },
 });

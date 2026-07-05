@@ -8,6 +8,7 @@ import {
   useMyCharacterVote,
   useVoteCharacter,
 } from '@/hooks/useCharacterPoll';
+import { haptics } from '@/lib/haptics';
 import { imageUrl } from '@/lib/tmdb';
 import { useAuth } from '@/providers/AuthProvider';
 import { colors, radius, spacing } from '@/theme';
@@ -69,13 +70,14 @@ export function CharacterPoll({ tvId, season, episode, cast }: Props) {
             <Pressable
               key={c.id}
               disabled={!session || vote.isPending}
-              onPress={() =>
+              onPress={() => {
+                haptics.medium();
                 vote.mutate({
                   character_id: c.id,
                   character_name: c.character || c.name,
                   profile_path: c.profile_path,
-                })
-              }
+                });
+              }}
               style={[styles.row, isMine && styles.rowMine]}>
               {/* Barra de fondo proporcional al % */}
               {hasResults && (

@@ -15,34 +15,45 @@ import {
   useComments,
   useDeleteComment,
   type CommentRow,
+  type CommentScope,
 } from '@/hooks/useComments';
+import { haptics } from '@/lib/haptics';
 import { timeAgo } from '@/lib/format';
 import { useAuth } from '@/providers/AuthProvider';
-import { colors, radius, spacing } from '@/theme';
+import { colors, radius, spacing, type } from '@/theme';
 import type { MediaType } from '@/types/tmdb';
 
 interface Props {
   tmdbId: number;
   mediaType: MediaType;
+  scope?: CommentScope;
+  title?: string;
 }
 
-export function CommentsSection({ tmdbId, mediaType }: Props) {
+export function CommentsSection({
+  tmdbId,
+  mediaType,
+  scope = {},
+  title = 'Comentarios',
+}: Props) {
   const { session } = useAuth();
-  const { data, isLoading } = useComments(tmdbId, mediaType);
-  const add = useAddComment(tmdbId, mediaType);
+  const { data, isLoading } = useComments(tmdbId, mediaType, scope);
+  const add = useAddComment(tmdbId, mediaType, scope);
   const [text, setText] = useState('');
 
   const count = data?.length ?? 0;
 
   const submit = () => {
     if (!text.trim() || add.isPending) return;
+    haptics.light();
     add.mutate(text, { onSuccess: () => setText('') });
   };
 
   return (
     <View style={styles.section}>
       <Text style={styles.sectionTitle}>
-        Comentarios{count > 0 ? ` · ${count}` : ''}
+        {title}
+        {count > 0 ? `  ${count}` : ''}
       </Text>
 
       {session ? (
@@ -149,7 +160,7 @@ function CommentItem({
 
 const styles = StyleSheet.create({
   section: { gap: spacing.md },
-  sectionTitle: { color: colors.text, fontSize: 18, fontWeight: '700' },
+  sectionTitle: { color: colors.text, ...type.heading },
   composer: { flexDirection: 'row', gap: spacing.sm, alignItems: 'flex-end' },
   input: {
     flex: 1,
