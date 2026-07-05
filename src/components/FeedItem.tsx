@@ -7,6 +7,7 @@ import { Pressable, StyleSheet, Text, View } from 'react-native';
 import { Poster } from '@/components/Poster';
 import { useMediaBrief } from '@/hooks/useTmdb';
 import type { FeedItem as FeedItemType } from '@/hooks/useActivityFeed';
+import { emotionByKey } from '@/lib/emotions';
 import { timeAgo } from '@/lib/format';
 import { colors, radius, spacing, type as typo } from '@/theme';
 
@@ -22,6 +23,7 @@ const ICONS: Record<FeedItemType['type'], keyof typeof Ionicons.glyphMap> = {
   comment: 'chatbubble-ellipses',
   character_vote: 'trophy',
   watched: 'checkmark-done',
+  reaction: 'heart',
 };
 
 /** Texto de la acción: "valoró con 8/10", "vio 5 episodios", etc. */
@@ -42,6 +44,12 @@ function actionText(item: FeedItemType): string {
         : ep
           ? `vio el episodio ${ep}`
           : 'vio un episodio';
+    case 'reaction': {
+      const label = emotionByKey(item.payload?.emotion ?? '')?.label;
+      return label
+        ? `reaccionó "${label}"${ep ? ` a ${ep}` : ''}`
+        : 'reaccionó a un episodio';
+    }
   }
 }
 

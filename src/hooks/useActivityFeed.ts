@@ -3,7 +3,12 @@ import { useInfiniteQuery } from '@tanstack/react-query';
 import { supabase } from '@/lib/supabase';
 import type { MediaType } from '@/types/tmdb';
 
-export type FeedType = 'rating' | 'comment' | 'character_vote' | 'watched';
+export type FeedType =
+  | 'rating'
+  | 'comment'
+  | 'character_vote'
+  | 'watched'
+  | 'reaction';
 
 /** Una fila cruda de la vista activity_feed. */
 export interface FeedRow {
