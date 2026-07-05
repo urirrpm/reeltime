@@ -3,6 +3,7 @@ import {
   Pressable,
   ScrollView,
   StyleSheet,
+  Switch,
   Text,
   View,
 } from 'react-native';
@@ -10,12 +11,14 @@ import {
 import { Screen } from '@/components/Screen';
 import { REGIONS } from '@/config/region';
 import { useAuth } from '@/providers/AuthProvider';
+import { usePush } from '@/providers/PushProvider';
 import { useRegion } from '@/providers/RegionProvider';
 import { colors, radius, spacing, type } from '@/theme';
 
 export default function ProfileScreen() {
   const { session, configured, signOut } = useAuth();
   const { region, setRegion } = useRegion();
+  const { enabled: pushEnabled, busy: pushBusy, toggle: togglePush } = usePush();
 
   return (
     <Screen>
@@ -48,6 +51,29 @@ export default function ProfileScreen() {
             </>
           )}
         </View>
+
+        {session && (
+          <View style={styles.card}>
+            <Text style={styles.cardLabel}>Notificaciones</Text>
+            <View style={styles.switchRow}>
+              <View style={styles.switchTextCol}>
+                <Text style={styles.value}>Nuevos episodios</Text>
+                <Text style={styles.muted}>
+                  Te avisamos el día que se estrena un episodio de las series que
+                  sigues.
+                </Text>
+              </View>
+              <Switch
+                value={pushEnabled}
+                onValueChange={togglePush}
+                disabled={pushBusy}
+                trackColor={{ false: colors.surfaceHigh, true: colors.primary }}
+                thumbColor={colors.onAccent}
+                ios_backgroundColor={colors.surfaceHigh}
+              />
+            </View>
+          </View>
+        )}
 
         <View style={styles.card}>
           <Text style={styles.cardLabel}>Región (dónde ver / idioma)</Text>
@@ -92,6 +118,13 @@ const styles = StyleSheet.create({
   cardLabel: { color: colors.text, fontSize: 16, fontWeight: '700' },
   value: { color: colors.text, fontSize: 15 },
   muted: { color: colors.textMuted, fontSize: 13 },
+  switchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    gap: spacing.md,
+  },
+  switchTextCol: { flex: 1, gap: 2 },
   regionGrid: {
     flexDirection: 'row',
     flexWrap: 'wrap',
