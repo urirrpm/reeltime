@@ -16,6 +16,8 @@ export interface CommentRow {
   season_number: number | null;
   episode_number: number | null;
   author: { username: string | null; avatar_url: string | null } | null;
+  likeCount: number;
+  liked: boolean;
 }
 
 /** Ámbito del hilo de comentarios: título (por defecto) o episodio concreto. */
@@ -37,14 +39,16 @@ export function useComments(
   mediaType: MediaType,
   scope: CommentScope = {},
 ) {
+  const { session } = useAuth();
   return useQuery({
-    queryKey: key(tmdbId, mediaType, scope),
+    queryKey: [...key(tmdbId, mediaType, scope), session?.user.id],
     enabled: Number.isFinite(tmdbId) && tmdbId > 0,
     queryFn: async (): Promise<CommentRow[]> => {
+      // El contador de likes viene incrustado por PostgREST: comment_likes(count).
       let q = supabase
         .from('comments')
         .select(
-          'id, body, created_at, user_id, season_number, episode_number, author:profiles(username, avatar_url)',
+          'id, body, created_at, user_id, season_number, episode_number, author:profiles(username, avatar_url), likes:comment_likes(count)',
         )
         .eq('tmdb_id', tmdbId)
         .eq('media_type', mediaType);
@@ -59,7 +63,72 @@ export function useComments(
 
       const { data, error } = await q.order('created_at', { ascending: false });
       if (error) throw error;
-      return (data ?? []) as unknown as CommentRow[];
+
+      const rows = (data ?? []) as any[];
+
+      // Qué comentarios he marcado yo con "me gusta".
+      let mine = new Set<string>();
+      if (session && rows.length) {
+        const { data: likes } = await supabase
+          .from('comment_likes')
+          .select('comment_id')
+          .eq('user_id', session.user.id)
+          .in(
+            'comment_id',
+            rows.map((r) => r.id),
+          );
+        mine = new Set((likes ?? []).map((l) => l.comment_id as string));
+      }
+
+      return rows.map((r) => ({
+        id: r.id,
+        body: r.body,
+        created_at: r.created_at,
+        user_id: r.user_id,
+        season_number: r.season_number,
+        episode_number: r.episode_number,
+        author: r.author,
+        likeCount: r.likes?.[0]?.count ?? 0,
+        liked: mine.has(r.id),
+      }));
+    },
+  });
+}
+
+/** Da o quita "me gusta" a un comentario. Refresca los hilos de comentarios. */
+export function useToggleCommentLike() {
+  const qc = useQueryClient();
+  const { session } = useAuth();
+  return useMutation({
+    mutationFn: async ({ id, liked }: { id: string; liked: boolean }) => {
+      if (!session) throw new Error('Debes iniciar sesión');
+      if (liked) {
+        const { error } = await supabase
+          .from('comment_likes')
+          .delete()
+          .match({ comment_id: id, user_id: session.user.id });
+        if (error) throw error;
+      } else {
+        const { error } = await supabase
+          .from('comment_likes')
+          .insert({ comment_id: id, user_id: session.user.id });
+        if (error) throw error;
+      }
+    },
+    onSuccess: () => qc.invalidateQueries({ queryKey: ['comments'] }),
+  });
+}
+
+/** Reporta un comentario (base de moderación). */
+export function useReportComment() {
+  const { session } = useAuth();
+  return useMutation({
+    mutationFn: async ({ id, reason }: { id: string; reason?: string }) => {
+      if (!session) throw new Error('Debes iniciar sesión');
+      const { error } = await supabase
+        .from('comment_reports')
+        .insert({ comment_id: id, user_id: session.user.id, reason });
+      if (error && error.code !== '23505') throw error; // 23505 = ya reportado
     },
   });
 }
