@@ -29,6 +29,22 @@ export function formatRuntime(minutes: number | null | undefined): string {
   return `${h}h ${m}min`;
 }
 
+/** Tiempo relativo compacto en español: "ahora", "hace 5 min", "hace 2 h", "hace 3 d". */
+export function timeAgo(iso: string): string {
+  const then = new Date(iso).getTime();
+  const secs = Math.max(0, Math.floor((Date.now() - then) / 1000));
+  if (secs < 60) return 'ahora';
+  const mins = Math.floor(secs / 60);
+  if (mins < 60) return `hace ${mins} min`;
+  const hours = Math.floor(mins / 60);
+  if (hours < 24) return `hace ${hours} h`;
+  const days = Math.floor(hours / 24);
+  if (days < 7) return `hace ${days} d`;
+  const weeks = Math.floor(days / 7);
+  if (weeks < 5) return `hace ${weeks} sem`;
+  return formatDate(iso.slice(0, 10));
+}
+
 /** Días hasta una fecha (negativo = pasada). null si no hay fecha. */
 export function daysUntil(date: string | null | undefined, today: Date): number | null {
   if (!date) return null;

@@ -11,6 +11,7 @@ import {
   View,
 } from 'react-native';
 
+import { CommentsSection } from '@/components/CommentsSection';
 import { Poster } from '@/components/Poster';
 import { WatchProviders } from '@/components/WatchProviders';
 import { useDetail } from '@/hooks/useTmdb';
@@ -171,6 +172,8 @@ export default function TitleDetailScreen() {
             </ScrollView>
           </Section>
         )}
+
+        <CommentsSection tmdbId={data.id} mediaType={data.media_type} />
       </View>
     </ScrollView>
   );
