@@ -125,6 +125,33 @@ export async function getUpcomingMovies(
   return data.results.map((r) => ({ ...r, media_type: 'movie' as const }));
 }
 
+/**
+ * Datos mínimos de una obra (título + póster). Se usa en el feed social para
+ * resolver el nombre a partir de tmdb_id + media_type sin traer el detalle
+ * completo. TanStack Query cachea por (tipo, id, región) así que títulos
+ * repetidos no vuelven a pedirse.
+ */
+export interface MediaBrief {
+  id: number;
+  media_type: MediaType;
+  title: string;
+  poster_path: string | null;
+}
+
+export async function getMediaBrief(
+  type: MediaType,
+  id: number,
+  region: RegionOption = DEFAULT_REGION,
+): Promise<MediaBrief> {
+  const raw = await request<any>(`/${type}/${id}`, { language: region.language });
+  return {
+    id: raw.id,
+    media_type: type,
+    title: raw.title ?? raw.name ?? 'Sin título',
+    poster_path: raw.poster_path ?? null,
+  };
+}
+
 // ---------------------------------------------------------------------------
 // Búsqueda
 // ---------------------------------------------------------------------------

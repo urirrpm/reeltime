@@ -4,6 +4,7 @@ import { useRegion } from '@/providers/RegionProvider';
 import {
   getDetail,
   getEpisode,
+  getMediaBrief,
   getOnTheAir,
   getPopular,
   getSeasonEpisodes,
@@ -51,6 +52,17 @@ export function useSearch(query: string) {
     queryKey: ['search', query, region.code],
     queryFn: () => searchMulti(query, region),
     enabled: query.trim().length > 1,
+  });
+}
+
+/** Título + póster (ligero) de una obra, para el feed. Cacheado por id/región. */
+export function useMediaBrief(type: MediaType, id: number) {
+  const { region } = useRegion();
+  return useQuery({
+    queryKey: ['brief', type, id, region.code],
+    queryFn: () => getMediaBrief(type, id, region),
+    enabled: Number.isFinite(id) && id > 0,
+    staleTime: 1000 * 60 * 60, // los títulos no cambian; 1h de caché
   });
 }
 
