@@ -67,7 +67,9 @@ function FeedItemBase({ item }: { item: FeedItemType }) {
         {/* Texto */}
         <View style={styles.body}>
           <Text style={styles.line}>
-            <Text style={styles.user}>@{item.username ?? 'alguien'}</Text>
+            <Link href={`/user/${item.actor_id}`} asChild>
+              <Text style={styles.user}>@{item.username ?? 'alguien'}</Text>
+            </Link>
             <Text style={styles.muted}> {actionText(item)}</Text>
           </Text>
           {!!title && (

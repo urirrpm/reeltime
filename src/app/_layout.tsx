@@ -33,6 +33,7 @@ export default function RootLayout() {
                     name="sign-in"
                     options={{ presentation: 'modal', title: 'Cuenta' }}
                   />
+                  <Stack.Screen name="user/[id]" options={{ title: '' }} />
                 </Stack>
               </PushProvider>
             </AuthProvider>

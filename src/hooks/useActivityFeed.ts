@@ -31,18 +31,39 @@ export interface FeedItem extends FeedRow {
 
 const PAGE = 25;
 
-/** Feed global de actividad reciente de la comunidad (paginado). */
-export function useActivityFeed() {
+/**
+ * Filtro del feed:
+ *  - sin filtro           -> feed global (Descubrir).
+ *  - actorId              -> actividad de un usuario (su ficha).
+ *  - actorIn: string[]    -> actividad de a quién sigues (Siguiendo). Si va como
+ *                            array vacío, no se consulta (no sigues a nadie).
+ */
+export interface FeedFilter {
+  actorId?: string;
+  actorIn?: string[];
+}
+
+/** Feed de actividad reciente (paginado), opcionalmente filtrado. */
+export function useActivityFeed(filter: FeedFilter = {}) {
+  const { actorId, actorIn } = filter;
+  // En modo "Siguiendo" sin nadie a quien seguir, no lanzamos consulta.
+  const disabled = actorIn !== undefined && actorIn.length === 0;
+
   return useInfiniteQuery({
-    queryKey: ['activity_feed'],
+    queryKey: ['activity_feed', actorId ?? null, actorIn ?? null],
+    enabled: !disabled,
     initialPageParam: 0,
     queryFn: async ({ pageParam }): Promise<FeedRow[]> => {
       const from = pageParam * PAGE;
-      const { data, error } = await supabase
+      let q = supabase
         .from('activity_feed')
         .select('*')
         .order('created_at', { ascending: false })
         .range(from, from + PAGE - 1);
+      if (actorId) q = q.eq('actor_id', actorId);
+      if (actorIn) q = q.in('actor_id', actorIn);
+
+      const { data, error } = await q;
       if (error) throw error;
       return (data ?? []) as FeedRow[];
     },
