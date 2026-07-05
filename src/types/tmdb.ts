@@ -51,6 +51,11 @@ export interface Episode {
   vote_average?: number;
 }
 
+/** Detalle de un episodio con su reparto (principal + invitados). */
+export interface EpisodeDetail extends Episode {
+  cast: CastMember[];
+}
+
 /** Un proveedor concreto (Netflix, HBO Max…) dentro de un país. */
 export interface WatchProvider {
   provider_id: number;

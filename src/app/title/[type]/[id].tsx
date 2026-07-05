@@ -13,6 +13,7 @@ import {
 
 import { CommentsSection } from '@/components/CommentsSection';
 import { Poster } from '@/components/Poster';
+import { RatingBox } from '@/components/RatingBox';
 import { WatchProviders } from '@/components/WatchProviders';
 import { useDetail } from '@/hooks/useTmdb';
 import {
@@ -106,6 +107,8 @@ export default function TitleDetailScreen() {
 
         <TrackControls detail={data} />
 
+        <RatingBox tmdbId={data.id} mediaType={data.media_type} />
+
         {data.trailer && (
           <Pressable
             style={styles.trailerBtn}
@@ -132,16 +135,26 @@ export default function TitleDetailScreen() {
         {type === 'tv' && (data.seasons?.length ?? 0) > 0 && (
           <Section title="Temporadas">
             {data.seasons!.map((s) => (
-              <View key={s.id} style={styles.seasonRow}>
-                <Poster path={s.poster_path} width={44} />
-                <View style={styles.seasonInfo}>
-                  <Text style={styles.seasonName}>{s.name}</Text>
-                  <Text style={styles.muted}>
-                    {s.episode_count} episodios
-                    {s.air_date ? ` · ${year(s.air_date)}` : ''}
-                  </Text>
-                </View>
-              </View>
+              <Link
+                key={s.id}
+                href={`/season/${data.id}/${s.season_number}`}
+                asChild>
+                <Pressable style={styles.seasonRow}>
+                  <Poster path={s.poster_path} width={44} />
+                  <View style={styles.seasonInfo}>
+                    <Text style={styles.seasonName}>{s.name}</Text>
+                    <Text style={styles.muted}>
+                      {s.episode_count} episodios
+                      {s.air_date ? ` · ${year(s.air_date)}` : ''}
+                    </Text>
+                  </View>
+                  <Ionicons
+                    name="chevron-forward"
+                    size={18}
+                    color={colors.textMuted}
+                  />
+                </Pressable>
+              </Link>
             ))}
           </Section>
         )}

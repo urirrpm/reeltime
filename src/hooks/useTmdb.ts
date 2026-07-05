@@ -3,6 +3,7 @@ import { useQuery } from '@tanstack/react-query';
 import { useRegion } from '@/providers/RegionProvider';
 import {
   getDetail,
+  getEpisode,
   getOnTheAir,
   getPopular,
   getSeasonEpisodes,
@@ -72,5 +73,21 @@ export function useSeasonEpisodes(
     queryKey: ['season', tvId, seasonNumber, region.code],
     queryFn: () => getSeasonEpisodes(tvId, seasonNumber, region),
     enabled: enabled && Number.isFinite(tvId) && seasonNumber >= 0,
+  });
+}
+
+export function useEpisode(
+  tvId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+) {
+  const { region } = useRegion();
+  return useQuery({
+    queryKey: ['episode', tvId, seasonNumber, episodeNumber, region.code],
+    queryFn: () => getEpisode(tvId, seasonNumber, episodeNumber, region),
+    enabled:
+      Number.isFinite(tvId) &&
+      Number.isFinite(seasonNumber) &&
+      Number.isFinite(episodeNumber),
   });
 }

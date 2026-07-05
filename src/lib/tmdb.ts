@@ -2,6 +2,7 @@ import { ENV } from '@/config/env';
 import { DEFAULT_REGION, type RegionOption } from '@/config/region';
 import type {
   Episode,
+  EpisodeDetail,
   MediaDetail,
   MediaListItem,
   MediaType,
@@ -281,4 +282,48 @@ export async function getSeasonEpisodes(
     { language: region.language },
   );
   return data.episodes ?? [];
+}
+
+/** Detalle de un episodio + su reparto (principal e invitados, sin duplicados). */
+export async function getEpisode(
+  tvId: number,
+  seasonNumber: number,
+  episodeNumber: number,
+  region: RegionOption = DEFAULT_REGION,
+): Promise<EpisodeDetail> {
+  const raw = await request<any>(
+    `/tv/${tvId}/season/${seasonNumber}/episode/${episodeNumber}`,
+    { language: region.language, append_to_response: 'credits' },
+  );
+
+  const people = [
+    ...(raw.credits?.cast ?? []),
+    ...(raw.credits?.guest_stars ?? []),
+  ];
+  const seen = new Set<number>();
+  const cast = [] as EpisodeDetail['cast'];
+  for (const p of people) {
+    if (seen.has(p.id)) continue;
+    seen.add(p.id);
+    cast.push({
+      id: p.id,
+      name: p.name,
+      character: p.character,
+      profile_path: p.profile_path,
+    });
+    if (cast.length >= 30) break;
+  }
+
+  return {
+    id: raw.id,
+    episode_number: raw.episode_number,
+    season_number: raw.season_number,
+    name: raw.name,
+    overview: raw.overview ?? '',
+    air_date: raw.air_date ?? null,
+    still_path: raw.still_path,
+    runtime: raw.runtime ?? null,
+    vote_average: raw.vote_average,
+    cast,
+  };
 }
