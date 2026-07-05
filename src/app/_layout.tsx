@@ -38,6 +38,11 @@ export default function RootLayout() {
                     name="edit-profile"
                     options={{ presentation: 'modal', title: 'Editar perfil' }}
                   />
+                  <Stack.Screen
+                    name="add-to-list"
+                    options={{ presentation: 'modal', title: 'Añadir a lista' }}
+                  />
+                  <Stack.Screen name="list/[id]" options={{ title: '' }} />
                 </Stack>
               </PushProvider>
             </AuthProvider>

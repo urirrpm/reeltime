@@ -16,6 +16,7 @@ import { CommentsSection } from '@/components/CommentsSection';
 import { Poster } from '@/components/Poster';
 import { ProgressBar } from '@/components/ProgressBar';
 import { RatingBox } from '@/components/RatingBox';
+import { TitleActions } from '@/components/TitleActions';
 import { WatchProviders } from '@/components/WatchProviders';
 import { useDetail } from '@/hooks/useTmdb';
 import {
@@ -115,6 +116,8 @@ export default function TitleDetailScreen() {
         </View>
 
         <TrackControls detail={data} />
+
+        <TitleActions detail={data} />
 
         {type === 'tv' && <SeriesProgress detail={data} />}
 

@@ -10,6 +10,7 @@ import {
   View,
 } from 'react-native';
 
+import { ProfileCollections } from '@/components/ProfileCollections';
 import { ProfileStats } from '@/components/ProfileStats';
 import { Screen } from '@/components/Screen';
 import { REGIONS } from '@/config/region';
@@ -69,6 +70,8 @@ export default function ProfileScreen() {
             </View>
 
             <ProfileStats userId={session.user.id} />
+
+            <ProfileCollections userId={session.user.id} editable />
           </>
         )}
 

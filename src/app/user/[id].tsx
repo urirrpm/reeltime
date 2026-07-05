@@ -11,6 +11,7 @@ import {
 
 import { FeedItem } from '@/components/FeedItem';
 import { FollowButton } from '@/components/FollowButton';
+import { ProfileCollections } from '@/components/ProfileCollections';
 import { ProfileStats } from '@/components/ProfileStats';
 import { Screen } from '@/components/Screen';
 import {
@@ -83,6 +84,11 @@ export default function UserScreen() {
             </View>
             <View style={styles.statsWrap}>
               {id && <ProfileStats userId={id} />}
+              {id && (
+                <View style={{ marginTop: spacing.lg }}>
+                  <ProfileCollections userId={id} editable={false} />
+                </View>
+              )}
             </View>
             <Text style={styles.sectionLabel}>Actividad</Text>
           </View>
