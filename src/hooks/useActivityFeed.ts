@@ -8,7 +8,8 @@ export type FeedType =
   | 'comment'
   | 'character_vote'
   | 'watched'
-  | 'reaction';
+  | 'reaction'
+  | 'episode_rating';
 
 /** Una fila cruda de la vista activity_feed. */
 export interface FeedRow {

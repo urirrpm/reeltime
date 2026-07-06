@@ -24,6 +24,7 @@ const ICONS: Record<FeedItemType['type'], keyof typeof Ionicons.glyphMap> = {
   character_vote: 'trophy',
   watched: 'checkmark-done',
   reaction: 'heart',
+  episode_rating: 'star',
 };
 
 /** Texto de la acción: "valoró con 8/10", "vio 5 episodios", etc. */
@@ -50,6 +51,8 @@ function actionText(item: FeedItemType): string {
         ? `reaccionó "${label}"${ep ? ` a ${ep}` : ''}`
         : 'reaccionó a un episodio';
     }
+    case 'episode_rating':
+      return `valoró ${ep || 'un episodio'} con ${item.payload?.score ?? '?'}/5`;
   }
 }
 

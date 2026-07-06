@@ -14,6 +14,7 @@ import {
 
 import { CharacterPoll } from '@/components/CharacterPoll';
 import { CommentsSection } from '@/components/CommentsSection';
+import { EpisodeRating } from '@/components/EpisodeRating';
 import { EpisodeReactions } from '@/components/EpisodeReactions';
 import { ShareButton } from '@/components/ShareButton';
 import { useEpisode } from '@/hooks/useTmdb';
@@ -134,6 +135,9 @@ export default function EpisodeScreen() {
         )}
 
         {!!data.overview && <Text style={styles.overview}>{data.overview}</Text>}
+
+        <View style={styles.divider} />
+        <EpisodeRating tvId={tvId} season={season} episode={episode} />
 
         <View style={styles.divider} />
         <EpisodeReactions tvId={tvId} season={season} episode={episode} />
