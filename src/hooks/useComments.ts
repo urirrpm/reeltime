@@ -4,6 +4,7 @@ import {
   useQueryClient,
 } from '@tanstack/react-query';
 
+import { containsBannedWord, POLICY_MESSAGE } from '@/lib/moderation';
 import { supabase } from '@/lib/supabase';
 import { useAuth } from '@/providers/AuthProvider';
 import type { MediaType } from '@/types/tmdb';
@@ -18,6 +19,7 @@ export interface CommentRow {
   author: { username: string | null; avatar_url: string | null } | null;
   likeCount: number;
   liked: boolean;
+  hidden: boolean;
 }
 
 /** Ámbito del hilo de comentarios: título (por defecto) o episodio concreto. */
@@ -48,7 +50,7 @@ export function useComments(
       let q = supabase
         .from('comments')
         .select(
-          'id, body, created_at, user_id, season_number, episode_number, author:profiles(username, avatar_url), likes:comment_likes(count)',
+          'id, body, created_at, user_id, season_number, episode_number, hidden, author:profiles(username, avatar_url), likes:comment_likes(count)',
         )
         .eq('tmdb_id', tmdbId)
         .eq('media_type', mediaType);
@@ -90,6 +92,7 @@ export function useComments(
         author: r.author,
         likeCount: r.likes?.[0]?.count ?? 0,
         liked: mine.has(r.id),
+        hidden: r.hidden ?? false,
       }));
     },
   });
@@ -145,6 +148,8 @@ export function useAddComment(
       if (!session) throw new Error('Debes iniciar sesión para comentar');
       const trimmed = body.trim();
       if (!trimmed) throw new Error('El comentario está vacío');
+      // Aviso inmediato en el cliente; el servidor lo vuelve a comprobar.
+      if (containsBannedWord(trimmed)) throw new Error(POLICY_MESSAGE);
       const { error } = await supabase.from('comments').insert({
         user_id: session.user.id,
         tmdb_id: tmdbId,
@@ -153,7 +158,13 @@ export function useAddComment(
         episode_number: scope.season == null ? null : scope.episode ?? 0,
         body: trimmed,
       });
-      if (error) throw error;
+      if (error) {
+        // El trigger del servidor rechaza el contenido con este mensaje.
+        if (error.message?.includes('comment_policy_violation')) {
+          throw new Error(POLICY_MESSAGE);
+        }
+        throw error;
+      }
     },
     onSuccess: () =>
       qc.invalidateQueries({ queryKey: key(tmdbId, mediaType, scope) }),

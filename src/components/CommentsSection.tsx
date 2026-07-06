@@ -245,24 +245,35 @@ function CommentItem({
             )
           )}
         </View>
-        <Text style={styles.text}>{comment.body}</Text>
-        <Pressable
-          onPress={onLike}
-          disabled={!canInteract}
-          hitSlop={8}
-          style={styles.likeRow}>
-          <Ionicons
-            name={comment.liked ? 'heart' : 'heart-outline'}
-            size={16}
-            color={comment.liked ? colors.danger : colors.textMuted}
-          />
-          {comment.likeCount > 0 && (
-            <Text
-              style={[styles.likeCount, comment.liked && styles.likeCountOn]}>
-              {comment.likeCount}
+        {comment.hidden ? (
+          <View style={styles.hiddenNote}>
+            <Ionicons name="eye-off-outline" size={13} color={colors.textMuted} />
+            <Text style={styles.hiddenText}>
+              Oculto por moderación. Solo tú lo ves.
             </Text>
-          )}
-        </Pressable>
+          </View>
+        ) : (
+          <>
+            <Text style={styles.text}>{comment.body}</Text>
+            <Pressable
+              onPress={onLike}
+              disabled={!canInteract}
+              hitSlop={8}
+              style={styles.likeRow}>
+              <Ionicons
+                name={comment.liked ? 'heart' : 'heart-outline'}
+                size={16}
+                color={comment.liked ? colors.danger : colors.textMuted}
+              />
+              {comment.likeCount > 0 && (
+                <Text
+                  style={[styles.likeCount, comment.liked && styles.likeCountOn]}>
+                  {comment.likeCount}
+                </Text>
+              )}
+            </Pressable>
+          </>
+        )}
       </View>
     </View>
   );
@@ -347,4 +358,11 @@ const styles = StyleSheet.create({
   },
   likeCount: { color: colors.textMuted, fontSize: 13, fontWeight: '600' },
   likeCountOn: { color: colors.danger },
+  hiddenNote: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: spacing.xs,
+    marginTop: 2,
+  },
+  hiddenText: { color: colors.textMuted, fontSize: 13, fontStyle: 'italic' },
 });
