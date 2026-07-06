@@ -14,6 +14,21 @@ export interface WatchedCounts {
  * El "tiempo de series" se estima en el cliente multiplicando por la duración
  * media de cada serie (TMDB) — ver ProfileStats.
  */
+/** IDs de películas marcadas como vistas (completed) por un usuario. */
+export function useCompletedMovies(userId?: string) {
+  return useQuery({
+    queryKey: ['completed-movies', userId],
+    enabled: !!userId,
+    queryFn: async (): Promise<number[]> => {
+      const { data, error } = await supabase.rpc('completed_movie_ids', {
+        p_user: userId,
+      });
+      if (error) throw error;
+      return (data ?? []).map((r: any) => r.tmdb_id as number);
+    },
+  });
+}
+
 export function useWatchedCounts(userId?: string) {
   return useQuery({
     queryKey: ['watched_counts', userId],
