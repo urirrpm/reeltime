@@ -93,6 +93,7 @@ export default function LibraryScreen() {
                     key={`${t.media_type}-${t.tmdb_id}`}
                     item={toListItem(t)}
                     width={104}
+                    showTitle={false}
                   />
                 ))}
               </View>
