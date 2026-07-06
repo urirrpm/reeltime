@@ -1,6 +1,7 @@
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
 import { MediaRow } from '@/components/MediaRow';
+import { NotificationBell } from '@/components/NotificationBell';
 import { Screen } from '@/components/Screen';
 import { hasTmdb } from '@/config/env';
 import {
@@ -25,6 +26,7 @@ export default function DiscoverScreen() {
         showsVerticalScrollIndicator={false}>
         <View style={styles.header}>
           <Text style={styles.appName}>Reeltime</Text>
+          <NotificationBell />
         </View>
 
         {!hasTmdb() && (
@@ -75,6 +77,9 @@ const styles = StyleSheet.create({
   header: {
     paddingHorizontal: spacing.lg,
     paddingTop: spacing.xs,
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   appName: { color: colors.text, ...type.hero },
   banner: {

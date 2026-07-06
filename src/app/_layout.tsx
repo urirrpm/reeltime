@@ -43,6 +43,7 @@ export default function RootLayout() {
                     options={{ presentation: 'modal', title: 'Añadir a lista' }}
                   />
                   <Stack.Screen name="list/[id]" options={{ title: '' }} />
+                  <Stack.Screen name="activity" options={{ title: 'Actividad' }} />
                 </Stack>
               </PushProvider>
             </AuthProvider>

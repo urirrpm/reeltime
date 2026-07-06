@@ -66,11 +66,24 @@ export function PushProvider({ children }: { children: ReactNode }) {
   useEffect(() => {
     const sub = Notifications.addNotificationResponseReceivedListener((res) => {
       const data = res.notification.request.content.data as {
-        tvId?: number;
         type?: string;
+        tvId?: number;
+        userId?: string;
+        mediaType?: string;
+        season?: number;
+        episode?: number;
       };
-      if (data?.tvId) {
-        router.push(`/title/tv/${data.tvId}`);
+      if (data?.type === 'follow' && data.userId) {
+        router.push(`/user/${data.userId}`);
+      } else if (
+        data?.type === 'comment_like' &&
+        data.tvId &&
+        data.season != null &&
+        data.episode != null
+      ) {
+        router.push(`/episode/${data.tvId}/${data.season}/${data.episode}`);
+      } else if (data?.tvId) {
+        router.push(`/title/${data.mediaType ?? 'tv'}/${data.tvId}`);
       }
     });
     return () => sub.remove();
