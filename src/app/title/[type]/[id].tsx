@@ -16,6 +16,7 @@ import { CommentsSection } from '@/components/CommentsSection';
 import { Poster } from '@/components/Poster';
 import { ProgressBar } from '@/components/ProgressBar';
 import { RatingBox } from '@/components/RatingBox';
+import { ShareButton } from '@/components/ShareButton';
 import { TitleActions } from '@/components/TitleActions';
 import { WatchProviders } from '@/components/WatchProviders';
 import { useDetail } from '@/hooks/useTmdb';
@@ -63,7 +64,17 @@ export default function TitleDetailScreen() {
 
   return (
     <ScrollView style={styles.bg} contentContainerStyle={styles.content}>
-      <Stack.Screen options={{ title: data.title }} />
+      <Stack.Screen
+        options={{
+          title: data.title,
+          headerRight: () => (
+            <ShareButton
+              path={`title/${data.media_type}/${data.id}`}
+              title={data.title}
+            />
+          ),
+        }}
+      />
 
       {/* Backdrop con degradado hacia el fondo */}
       <View style={styles.backdropWrap}>

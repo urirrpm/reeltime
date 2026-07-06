@@ -15,6 +15,7 @@ import {
 import { CharacterPoll } from '@/components/CharacterPoll';
 import { CommentsSection } from '@/components/CommentsSection';
 import { EpisodeReactions } from '@/components/EpisodeReactions';
+import { ShareButton } from '@/components/ShareButton';
 import { useEpisode } from '@/hooks/useTmdb';
 import {
   epKey,
@@ -67,7 +68,17 @@ export default function EpisodeScreen() {
 
   return (
     <ScrollView style={styles.bg} contentContainerStyle={styles.content}>
-      <Stack.Screen options={{ title: `T${season} · E${episode}` }} />
+      <Stack.Screen
+        options={{
+          title: `T${season} · E${episode}`,
+          headerRight: () => (
+            <ShareButton
+              path={`episode/${tvId}/${season}/${episode}`}
+              title={`${data.name} (T${season}E${episode})`}
+            />
+          ),
+        }}
+      />
 
       <View style={styles.hero}>
         {data.still_path && (
