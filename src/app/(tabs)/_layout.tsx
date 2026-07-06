@@ -26,18 +26,9 @@ export default function TabsLayout() {
         }}
       />
       <Tabs.Screen
-        name="feed"
+        name="explore"
         options={{
-          title: 'Feed',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="pulse-outline" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="search"
-        options={{
-          title: 'Buscar',
+          title: 'Explorar',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="search-outline" color={color} size={size} />
           ),
@@ -49,15 +40,6 @@ export default function TabsLayout() {
           title: 'Mi lista',
           tabBarIcon: ({ color, size }) => (
             <Ionicons name="bookmark-outline" color={color} size={size} />
-          ),
-        }}
-      />
-      <Tabs.Screen
-        name="calendar"
-        options={{
-          title: 'Calendario',
-          tabBarIcon: ({ color, size }) => (
-            <Ionicons name="calendar-outline" color={color} size={size} />
           ),
         }}
       />

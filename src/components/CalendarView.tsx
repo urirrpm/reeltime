@@ -10,7 +10,6 @@ import {
 } from 'react-native';
 
 import { Poster } from '@/components/Poster';
-import { Screen } from '@/components/Screen';
 import { useTrackedItems } from '@/hooks/useTracking';
 import { getNextEpisode, type NextEpisodeInfo } from '@/lib/tmdb';
 import { formatDate } from '@/lib/format';
@@ -18,7 +17,9 @@ import { useAuth } from '@/providers/AuthProvider';
 import { useRegion } from '@/providers/RegionProvider';
 import { colors, radius, spacing, type } from '@/theme';
 
-export default function CalendarScreen() {
+/** Contenido del Calendario (próximos episodios de lo que sigues). Sin cabecera
+ *  propia: se usa dentro de la pestaña Explorar. */
+export function CalendarView() {
   const { session, configured } = useAuth();
   const { region } = useRegion();
   const { data: tracked } = useTrackedItems();
@@ -35,25 +36,22 @@ export default function CalendarScreen() {
 
   if (!configured || !session) {
     return (
-      <Screen>
-        <View style={styles.centered}>
-          <Text style={styles.emptyTitle}>Tu calendario de estrenos</Text>
-          <Text style={styles.emptyText}>
-            Inicia sesión y sigue series para ver aquí cuándo se estrena cada
-            nuevo episodio.
-          </Text>
-          <Link href="/sign-in" asChild>
-            <Pressable style={styles.cta}>
-              <Text style={styles.ctaText}>Iniciar sesión</Text>
-            </Pressable>
-          </Link>
-        </View>
-      </Screen>
+      <View style={styles.centered}>
+        <Text style={styles.emptyTitle}>Tu calendario de estrenos</Text>
+        <Text style={styles.emptyText}>
+          Inicia sesión y sigue series para ver aquí cuándo se estrena cada nuevo
+          episodio.
+        </Text>
+        <Link href="/sign-in" asChild>
+          <Pressable style={styles.cta}>
+            <Text style={styles.ctaText}>Iniciar sesión</Text>
+          </Pressable>
+        </Link>
+      </View>
     );
   }
 
   const loading = results.some((r) => r.isLoading);
-
   const upcoming: NextEpisodeInfo[] = results
     .map((r) => r.data)
     .filter((d): d is NextEpisodeInfo => !!d?.episode?.air_date)
@@ -62,44 +60,39 @@ export default function CalendarScreen() {
     );
 
   return (
-    <Screen>
-      <ScrollView contentContainerStyle={styles.content}>
-        <Text style={styles.title}>Calendario</Text>
+    <ScrollView contentContainerStyle={styles.content}>
+      {loading && <ActivityIndicator color={colors.primary} />}
 
-        {loading && <ActivityIndicator color={colors.primary} />}
+      {!loading && upcoming.length === 0 && (
+        <Text style={styles.emptyText}>
+          No hay episodios anunciados para tus series. Cuando se anuncien,
+          aparecerán aquí ordenados por fecha.
+        </Text>
+      )}
 
-        {!loading && upcoming.length === 0 && (
-          <Text style={styles.emptyText}>
-            No hay episodios anunciados para tus series. Cuando se anuncien,
-            aparecerán aquí ordenados por fecha.
-          </Text>
-        )}
-
-        {upcoming.map((u) => (
-          <Link key={u.tvId} href={`/title/tv/${u.tvId}`} asChild>
-            <Pressable style={styles.row}>
-              <Poster path={u.poster_path} width={54} />
-              <View style={styles.info}>
-                <Text style={styles.showTitle} numberOfLines={1}>
-                  {u.title}
-                </Text>
-                <Text style={styles.episode} numberOfLines={1}>
-                  T{u.episode!.season_number} · E{u.episode!.episode_number}
-                  {u.episode!.name ? ` — ${u.episode!.name}` : ''}
-                </Text>
-                <Text style={styles.date}>{formatDate(u.episode!.air_date)}</Text>
-              </View>
-            </Pressable>
-          </Link>
-        ))}
-      </ScrollView>
-    </Screen>
+      {upcoming.map((u) => (
+        <Link key={u.tvId} href={`/title/tv/${u.tvId}`} asChild>
+          <Pressable style={styles.row}>
+            <Poster path={u.poster_path} width={54} />
+            <View style={styles.info}>
+              <Text style={styles.showTitle} numberOfLines={1}>
+                {u.title}
+              </Text>
+              <Text style={styles.episode} numberOfLines={1}>
+                T{u.episode!.season_number} · E{u.episode!.episode_number}
+                {u.episode!.name ? ` — ${u.episode!.name}` : ''}
+              </Text>
+              <Text style={styles.date}>{formatDate(u.episode!.air_date)}</Text>
+            </View>
+          </Pressable>
+        </Link>
+      ))}
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
   content: { padding: spacing.lg, gap: spacing.lg },
-  title: { color: colors.text, ...type.hero },
   row: {
     flexDirection: 'row',
     gap: spacing.md,

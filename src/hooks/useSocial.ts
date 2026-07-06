@@ -32,6 +32,24 @@ export function useProfile(userId?: string) {
   });
 }
 
+/** Busca usuarios por nombre de usuario (para la búsqueda de Explorar). */
+export function useUserSearch(query: string) {
+  const q = query.trim();
+  return useQuery({
+    queryKey: ['user-search', q],
+    enabled: q.length > 1,
+    queryFn: async (): Promise<PublicProfile[]> => {
+      const { data, error } = await supabase
+        .from('profiles')
+        .select('id, username, avatar_url, cover_url, bio')
+        .ilike('username', `%${q}%`)
+        .limit(10);
+      if (error) throw error;
+      return (data ?? []) as PublicProfile[];
+    },
+  });
+}
+
 /** Actualiza campos del perfil del usuario actual. */
 export function useUpdateProfile() {
   const qc = useQueryClient();
